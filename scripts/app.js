@@ -1,7 +1,7 @@
-// Module
+// MODULE
 var weatherApp = angular.module('weatherApp', ['ngRoute', 'ngResource']);
 
-// Config
+// ROUTES
 weatherApp.config(function($routeProvider) {
 
    $routeProvider
@@ -12,18 +12,22 @@ weatherApp.config(function($routeProvider) {
    })
 
    .when('/forecast', {
-    templateUrl: 'pages/forecast.html',
-    controller: 'forecastController'
+        templateUrl: 'pages/forecast.html',
+        controller: 'forecastController'
+    })
+    .when('/forecast', {
+        templateUrl: 'pages/forecast.html',
+        controller: 'forecastController'
     });
 });
 
-// Service
+// SERVICES
 weatherApp.service('cityService', function() {
     var self = this;
     self.city = 'New York, NY';
 });
 
-// Controller
+// CONTROLLERS
 weatherApp.controller('homeController', ['$scope', 'cityService', function($scope, cityService) {
     $scope.city = cityService.city;
 
@@ -32,7 +36,15 @@ weatherApp.controller('homeController', ['$scope', 'cityService', function($scop
     });
 }]);
 
-weatherApp.controller('forecastController', ['$scope', 'cityService', function($scope, cityService) {
+weatherApp.controller('forecastController', ['$scope', '$resource', '$routeParams', 'cityService', function($scope, $resource, $routeParams, cityService) {
     $scope.city = cityService.city;
+    $scope.appid = 'a8d59c3132b0418b7e91d90f05b809e6';
+
+    $scope.weatherAPI = $resource("http://api.openweathermap.org/data/2.5/weather", { callback: "JSON_CALLBACK"}, { get: { method: "JSONP" }});
+    
+    $scope.weatherResult = $scope.weatherAPI.get({ q: $scope.city, appid: $scope.appid});
+
+    $consol.log($scope.weatherResult);
+
 
 }]);
